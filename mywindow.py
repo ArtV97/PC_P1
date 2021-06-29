@@ -38,14 +38,16 @@ class MyWindow(QMainWindow):
     def tbpressed(self,a):
         if a.text() == "fit":
             self.canvas.fitWorldToViewport()
+
         elif a.text() == "panR":
             self.canvas.panWorldWindow(-0.2, 0.0)
+
         elif a.text() == "grid":
             self.buildPopup("Grid Options", GRID)
     
-    def buildPopup(self, name, popUpType):
+    def buildPopup(self, name, popUpType, geometry = [200, 200, 300, 100]):
         self.popUp = Popup(name, popUpType)
-        self.popUp.setGeometry(200, 200, 300, 100)
+        self.popUp.setGeometry(geometry[0], geometry[1], geometry[2], geometry[3])
         self.popUp.show()
 
 class Popup(QWidget):
