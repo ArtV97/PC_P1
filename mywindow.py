@@ -46,16 +46,17 @@ class MyWindow(QMainWindow):
             self.buildPopup("Grid Options", GRID)
     
     def buildPopup(self, name, popUpType, geometry = [200, 200, 300, 100]):
-        self.popUp = Popup(name, popUpType)
+        self.popUp = Popup(name, popUpType, self.canvas)
         self.popUp.setGeometry(geometry[0], geometry[1], geometry[2], geometry[3])
         self.popUp.show()
 
 class Popup(QWidget):
-    def __init__(self, name, popUpType):
+    def __init__(self, name, popUpType, canvas_ref):
         super().__init__()
 
         self.name = name
         self.vbox = None
+        self.canvas = canvas_ref
 
         self.initUI(popUpType)
 
@@ -89,15 +90,15 @@ class Popup(QWidget):
         # Connecting the signal
         def callGridGenerator():
             try:
-                a = int(t1.text())
-                b = int(t2.text())
+                gridX = int(t1.text())
+                gridY = int(t2.text())
 
             except ValueError:
                 print("ERROR: Os campos não podem ser vazios")
                 return
 
             print("Gerando Grid!!!")
-            # faz chamada ao canvas passando a e b
+            self.canvas.generateGrid(gridX, gridY)
             self.close()
             
 

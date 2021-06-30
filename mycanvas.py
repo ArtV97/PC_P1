@@ -1,3 +1,4 @@
+from threading import Event
 from PyQt5 import QtOpenGL, QtCore
 from PyQt5.QtWidgets import *
 from OpenGL.GL import *
@@ -26,6 +27,9 @@ class MyCanvas(QtOpenGL.QGLWidget):
 
         self.m_hmodel = HeModel()
         self.m_controller = HeController(self.m_hmodel)
+
+        self.grid_points = []
+        self.updateWindow = False
 
     def initializeGL(self):
         #glClearColor(1.0, 1.0, 1.0, 1.0)
@@ -114,6 +118,16 @@ class MyCanvas(QtOpenGL.QGLWidget):
                     glVertex2f(ptc[0].getX(), ptc[0].getY())
                     glVertex2f(ptc[1].getX(), ptc[1].getY())
                 glEnd()
+        
+        if len(self.grid_points) > 0:
+            glColor3f(1.0,0.0,0.0)
+            glPointSize(2.0)
+
+            glBegin(GL_POINTS)
+            for point in self.grid_points: glVertex2f(point[0], point[1])
+            glEnd()
+            
+            #self.grid_points.clear()
 
         glEndList()
         self.update()
@@ -153,7 +167,6 @@ class MyCanvas(QtOpenGL.QGLWidget):
         self.m_pt0.setY(0.0)
         self.m_pt1.setX(0.0)
         self.m_pt1.setY(0.0)
-        
 
     def setModel(self,_model):
         self.m_model = _model
@@ -209,5 +222,26 @@ class MyCanvas(QtOpenGL.QGLWidget):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         glOrtho(self.m_L, self.m_R, self.m_B, self.m_T, -1.0, 1.0)
+
+        self.update()
+
+
+    def generateGrid(self, gridX, gridY):
+        self.grid_points.clear()
+
+        xmin, xmax, ymin, ymax = self.m_hmodel.getBoundBox()
+
+        #segments = self.m_hmodel.getSegments()
+
+        self.grid_points.append((xmin, ymin))
+        self.grid_points.append((xmin, ymax))
+        self.grid_points.append((xmax, ymin))
+        self.grid_points.append((xmax, ymax))
+
+        #for curv in segments:
+            #pts = curv.getPoints()
+            #for pt in pts:
+                #print(pt.getX(), pt.getY(), end=" | ")
+            #print()
 
         self.update()
