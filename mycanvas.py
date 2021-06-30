@@ -9,6 +9,8 @@ from geometry.segments.line import Line
 from geometry.point import Point
 from compgeom.tesselation import Tesselation
 
+import json
+
 class MyCanvas(QtOpenGL.QGLWidget):
 
     def __init__(self):
@@ -29,7 +31,6 @@ class MyCanvas(QtOpenGL.QGLWidget):
         self.m_controller = HeController(self.m_hmodel)
 
         self.grid_points = []
-        self.updateWindow = False
 
     def initializeGL(self):
         #glClearColor(1.0, 1.0, 1.0, 1.0)
@@ -120,11 +121,12 @@ class MyCanvas(QtOpenGL.QGLWidget):
                 glEnd()
         
         if len(self.grid_points) > 0:
-            glColor3f(1.0,0.0,0.0)
+            glColor3f(0.0,1.0,0.0)
             glPointSize(2.0)
 
             glBegin(GL_POINTS)
-            for point in self.grid_points: glVertex2f(point[0], point[1])
+            for point in self.grid_points:
+                glVertex2f(point["x"], point["y"])
             glEnd()
             
             #self.grid_points.clear()
@@ -231,17 +233,27 @@ class MyCanvas(QtOpenGL.QGLWidget):
 
         xmin, xmax, ymin, ymax = self.m_hmodel.getBoundBox()
 
-        #segments = self.m_hmodel.getSegments()
+        x_dist = xmax - xmin # distancia em x
+        y_dist = ymax - ymin # distancia em y
 
-        self.grid_points.append((xmin, ymin))
-        self.grid_points.append((xmin, ymax))
-        self.grid_points.append((xmax, ymin))
-        self.grid_points.append((xmax, ymax))
+        x_div = x_dist / float(gridX-1) # espacamento horizontal entre os pontos
+        y_div = y_dist / float(gridY-1) # espacamento vertical entre os pontos
 
-        #for curv in segments:
-            #pts = curv.getPoints()
-            #for pt in pts:
-                #print(pt.getX(), pt.getY(), end=" | ")
-            #print()
+        for v in range(gridY):
+            for h in range(gridX):
+                p = [xmin + x_div * h, ymin + y_div * v]
+
+                for patch in self.m_hmodel.patches:
+                    if patch.isPointInside(Point(p[0], p[1])):
+                        self.grid_points.append({"x": p[0], "y": p[1]})
+                        break
+        
+        if len(self.grid_points) == 0:
+            print("Nenhum ponto do grid está dentro do domínio!!!")
+            return
+
+        fileName = f"grid_points{gridX}x{gridY}.json"
+        with open(fileName, "w") as f:
+            json.dump(self.grid_points, f, indent=2)
 
         self.update()

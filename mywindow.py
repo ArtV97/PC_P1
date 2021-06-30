@@ -69,10 +69,10 @@ class Popup(QWidget):
             self.gridUI()
 
     def gridUI(self):
-        r1 = QLabel("Qtd de pontos no eixo x")
+        r1 = QLabel("Qtd de pontos no eixo x(x > 1)")
         t1 = QLineEdit()
         
-        r2 = QLabel("Qtd de pontos no eixo y")
+        r2 = QLabel("Qtd de pontos no eixo y(y > 1)")
         t2 = QLineEdit()
 
         b1 = QPushButton("Gerar Grid")
@@ -95,6 +95,10 @@ class Popup(QWidget):
 
             except ValueError:
                 print("ERROR: Os campos não podem ser vazios")
+                return
+
+            if gridX <= 1 and gridY <= 1:
+                print("ERROR: Os valores devem ser maiores que 1")
                 return
 
             print("Gerando Grid!!!")
