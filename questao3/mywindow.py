@@ -94,10 +94,10 @@ class Popup(QWidget):
                 gridY = int(t2.text())
 
             except ValueError:
-                print("ERROR: Os campos não podem ser vazios")
+                print("ERROR: Os campos devem ser preenchidos com um número inteiro")
                 return
 
-            if gridX <= 1 and gridY <= 1:
+            if gridX <= 1 or gridY <= 1:
                 print("ERROR: Os valores devem ser maiores que 1")
                 return
 
