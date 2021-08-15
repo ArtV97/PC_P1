@@ -129,10 +129,9 @@ class MyCanvas(QtOpenGL.QGLWidget):
                 glVertex2f(point["x"], point["y"])
             glEnd()
             
-            #self.grid_points.clear()
+            self.grid_points.clear()
 
         glEndList()
-        self.update()
 
     def convertPtCoordsToUniverse(self, _pt):
         dX = self.m_R - self.m_L
@@ -162,6 +161,9 @@ class MyCanvas(QtOpenGL.QGLWidget):
         p1 = Point(pt1_U.x(),pt1_U.y())
         segment = Line(p0,p1)
         self.m_controller.insertSegment(segment,0.01)
+
+        self.update()
+        self.repaint()
 
         #self.m_model.setCurve(self.m_pt0.x(),self.m_pt0.y(),self.m_pt1.x(),self.m_pt1.y())
         self.m_buttonPressed = False
@@ -229,7 +231,7 @@ class MyCanvas(QtOpenGL.QGLWidget):
 
 
     def generateGrid(self, gridX, gridY):
-        self.grid_points.clear()
+        #self.grid_points.clear()
 
         xmin, xmax, ymin, ymax = self.m_hmodel.getBoundBox()
 
@@ -257,3 +259,4 @@ class MyCanvas(QtOpenGL.QGLWidget):
             json.dump(self.grid_points, f, indent=2)
 
         self.update()
+        self.repaint()
